@@ -186,7 +186,7 @@ function startRecording(accountName, accountCIS, userId, date){
             type: 'video/webm'
         });
         
-        let fileName = userId+'_'+accountCIS+'_'+accountName+'_'+date+'.webm';
+        let fileName = 'DSM_UserId='+userId+'_CustomerId='+accountCIS+'_DateTime='+date+'.webm';
         
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
