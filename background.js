@@ -10,6 +10,7 @@ var accountName = null;
 var accountCIS = null;
 var userId = null;
 var date = null;
+var fileName = null;
 
 var constraints = {
 	video: true, 
@@ -51,6 +52,7 @@ chrome.runtime.onConnect.addListener((port) => {
 				startRecording(accountName, accountCIS, userId, date);
 			}
 		}else if(message.component === 'stop-recording' && mediaRecorder !== null){
+            fileName = message.message.fileName;
             stopRecording();
         }
 	});
@@ -186,16 +188,18 @@ function startRecording(accountName, accountCIS, userId, date){
             type: 'video/webm'
         });
         
-        let fileName = 'DSM_UserId='+userId+'_CustomerId='+accountCIS+'_DateTime='+date+'.webm';
+        // let fileName = accountCIS+'_'+userId+'_'+date+'_'+'F.webm';
         
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
         document.body.appendChild(a);
         a.style = 'display: none';
         a.href = url;
-        a.download = fileName;
+        a.download = fileName+'.webm';
         a.click();
         window.URL.revokeObjectURL(url);
+
+        fileName = null;
 	}
   	mediaRecorder.start();
 }
@@ -204,3 +208,24 @@ function stopRecording(){
 	mediaRecorder.stop();
     mediaRecorder = null;
 }
+/////////////////////////////////////////////////////////////
+// var filter = {
+//   url:
+//   [
+//     {hostContains: "ngrok"},
+//     {urlContains:".pdf"}
+//   ]
+// };
+
+// chrome.webNavigation.onCreatedNavigationTarget.addListener(function (details){
+
+//     chrome.tabs.getCurrent(function(currentTab) {
+//         console.log("url openr :",currentTab.url);
+//     })
+
+//     console.log('before navigate');
+//     console.log("url",details.url);
+//     console.log("tabid",details.tabId)
+//     chrome.tabs.remove(details.tabId, function() { });
+
+// },filter);

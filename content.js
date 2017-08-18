@@ -10,7 +10,7 @@ window.addEventListener('message', (event) => {
 		sendMessageToBackgroundScript(component,message);
 	}else if(event.data.component === 'stop-recording'){
 		let message = 'stop-recording';
-		sendMessageToBackgroundScript(component,message);
+		sendMessageToBackgroundScript(component,event.data.message);
 	}
 });
 
@@ -74,7 +74,6 @@ function getMicrophone(){
         };
 
         peer.oniceconnectionstatechange = function() {
-        	console.log('ice changed');
         	if(!peer) return;
 
             if(streamToSend && peer.iceConnectionState == 'failed' || peer.iceConnectionState == 'disconnected') {

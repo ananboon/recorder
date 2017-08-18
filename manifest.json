@@ -35,7 +35,9 @@
   "permissions": [
     "activeTab",
     "tabs",
-    "tabCapture"
+    "tabCapture",
+    "webNavigation", //=> user for check parent that open tabs
+    "<all_urls>"
   ],
   "content_scripts":[  
       {  
