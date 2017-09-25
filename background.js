@@ -12,6 +12,9 @@ var userId = null;
 var date = null;
 var fileName = null;
 
+// var domain = "https://35.198.202.147";
+var focusTabId = null;
+
 var constraints = {
 	video: true, 
 	audio: true,
@@ -65,14 +68,49 @@ chrome.browserAction.onClicked.addListener(function() {
 });
 
 function askContentScriptToSendMicrophone(tabId) {
-    chrome.tabs.update(tabId, {
-        active: true
-    }, function() {
-        let component = 'microphone';
-        let message = 'get-microphone';
-		sendMessageToContentScript(component,message);
-    });
+
+    chrome.tabs.query(
+        {
+            currentWindow: true,
+            active: true
+        },
+        function(tabs) {
+            if(tabs[0].url.includes(DOMAIN)){
+
+                chrome.tabs.update(tabs[0].id, {
+                    active: true
+                }, function() {
+                    let component = 'microphone';
+                    let message = 'get-microphone';
+                    // sendMessageToContentScript(component,message);
+                    let body = {
+                        component: component,
+                        message: message
+                    }
+                    focusTabId = tabs[0].id;
+                   sendRequestToContentScript(tabs[0].id, body);
+                });
+            }else{
+                alert('Please Make sure that you are on DSM browser!!');
+            }
+            
+        }
+    );
+
+  //   chrome.tabs.update(tabId, {
+  //       active: true,
+  //   }, function() {
+  //       let component = 'microphone';
+  //       let message = 'get-microphone';
+		// sendMessageToContentScript(component,message);
+  //   });
 }
+
+function sendRequestToContentScript(tabid,object){
+
+    chrome.tabs.sendRequest(tabid,object);
+}
+
 
 function sendMessageToContentScript(component,message){
 	var body = {
@@ -114,6 +152,7 @@ function createAnswer(sdp){
 }
 
 function captureTab(){
+ 
 	chrome.tabCapture.capture(constraints,
 		(stream) => {
             if (audioStream && audioStream.getAudioTracks && audioStream.getAudioTracks().length) {
@@ -208,24 +247,31 @@ function stopRecording(){
 	mediaRecorder.stop();
     mediaRecorder = null;
 }
-/////////////////////////////////////////////////////////////
-// var filter = {
-//   url:
-//   [
-//     {hostContains: "ngrok"},
-//     {urlContains:".pdf"}
-//   ]
-// };
+///////////////////////////////////////////////////////////
 
-// chrome.webNavigation.onCreatedNavigationTarget.addListener(function (details){
+var filter = {
+  url:
+  [
+    {hostPrefix: DOMAIN},
+    {urlContains:".pdf"}
+  ]
+};
 
-//     chrome.tabs.getCurrent(function(currentTab) {
-//         console.log("url openr :",currentTab.url);
-//     })
+chrome.webNavigation.onCreatedNavigationTarget.addListener(function (details){
 
-//     console.log('before navigate');
-//     console.log("url",details.url);
-//     console.log("tabid",details.tabId)
-//     chrome.tabs.remove(details.tabId, function() { });
+    if(details.url.includes(DOMAIN)){
+        chrome.tabs.remove(details.tabId, function() {
 
-// },filter);
+            // let component = 'OPEN_FUND_FACT_SHEET';
+            // let message = details.url;
+            // sendMessageToContentScript(component,message);
+            let body = {
+                component : 'OPEN_FUND_FACT_SHEET',
+                message : details.url
+            }
+
+            sendRequestToContentScript(focusTabId,body)
+        });
+    }
+
+},filter);

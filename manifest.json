@@ -1,13 +1,13 @@
 {
-  "name": "Cross Msg 2",
+  "name": "DSM Extension",
   "description": "Send msg btw main page and extension",
   "version": "1",
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["GLOBAL_CONSTANT.js","background.js"],
     "persistent": true
   },
   "browser_action": {
-    "default_title": "send msg"
+    "default_title": "DSM"
   },
   "manifest_version": 2,
 
@@ -42,7 +42,7 @@
   "content_scripts":[  
       {  
          "matches":["<all_urls>"],
-         "js":["content.js"]
+         "js":["GLOBAL_CONSTANT.js","content.js"]
       }
    ],
 

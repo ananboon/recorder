@@ -21,8 +21,31 @@ runtimePort.onMessage.addListener((message) => {
 		} 
 	}else if(message.component === 'sdp'){
 		peer.setRemoteDescription(new RTCSessionDescription(message.message));
-	}	
+	}
+    // else if(message.component === 'OPEN_FUND_FACT_SHEET'){
+    //     let jsonMessage = {
+    //           url:message.message,
+    //           eventType:'OPEN_FUND_FACT_SHEET'
+    //       };
+    //     window.postMessage(jsonMessage,"*");
+    // }
 });
+/////////
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+    if(request.component === 'microphone'){
+        if(request.message === 'get-microphone'){
+            getMicrophone();
+        }
+    }
+    else if(request.component === 'OPEN_FUND_FACT_SHEET'){
+         let jsonMessage = {
+              url:request.message,
+              eventType:'OPEN_FUND_FACT_SHEET'
+          };
+        window.postMessage(jsonMessage,"*");
+    }
+});
+
 
 function sendMessageToBackgroundScript(component,message){
 	var body = {
@@ -101,6 +124,7 @@ function getMicrophone(){
         });
 	})
 	.catch(function(error) {
+        alert('Please Check Your Microphone InPut');
 	    console.log(error);
 	});
 }
